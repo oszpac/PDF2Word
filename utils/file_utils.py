@@ -1,4 +1,5 @@
 import os
+import tempfile
 from config import SUPPORTED_FORMATS
 
 
@@ -20,11 +21,7 @@ def validate_pdf_file(file_path):
     return True, ''
 
 
-def get_output_path(input_pdf_path, output_dir=None):
-    base_name = os.path.splitext(os.path.basename(input_pdf_path))[0]
-    if output_dir is None:
-        from config import DEFAULT_OUTPUT_DIR
-        output_dir = DEFAULT_OUTPUT_DIR
+def _build_output_path(output_dir, base_name):
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f'{base_name}_转换结果.docx')
     counter = 1
@@ -32,6 +29,31 @@ def get_output_path(input_pdf_path, output_dir=None):
         output_path = os.path.join(output_dir, f'{base_name}_转换结果({counter}).docx')
         counter += 1
     return output_path
+
+
+def get_output_path(input_pdf_path, output_dir=None):
+    base_name = os.path.splitext(os.path.basename(input_pdf_path))[0]
+    if output_dir is None:
+        from config import DEFAULT_OUTPUT_DIR
+        output_dir = DEFAULT_OUTPUT_DIR
+    try:
+        return _build_output_path(output_dir, base_name)
+    except PermissionError:
+        fallback_dir = os.path.join(tempfile.gettempdir(), 'PDF2Word')
+        try:
+            os.makedirs(fallback_dir, exist_ok=True)
+            return _build_output_path(fallback_dir, base_name)
+        except Exception:
+            fallback_dir = os.path.expanduser('~')
+            return _build_output_path(fallback_dir, base_name)
+    except OSError:
+        fallback_dir = os.path.join(tempfile.gettempdir(), 'PDF2Word')
+        try:
+            os.makedirs(fallback_dir, exist_ok=True)
+            return _build_output_path(fallback_dir, base_name)
+        except Exception:
+            fallback_dir = os.path.expanduser('~')
+            return _build_output_path(fallback_dir, base_name)
 
 
 def format_file_size(size_bytes):

@@ -16,7 +16,7 @@ OCR_DPI = 300
 
 SUPPORTED_FORMATS = ['.pdf']
 
-DEFAULT_OUTPUT_DIR = os.path.expanduser('~\\Documents')
+DEFAULT_OUTPUT_DIR = os.path.expanduser('~')
 
 WINDOW_WIDTH = 960
 WINDOW_HEIGHT = 680

@@ -62,10 +62,10 @@ class TaskRunner(QThread):
                 output_path = self.output_path
             else:
                 output_path = get_output_path(self.file_path, self.output_dir)
-            builder.save(output_path)
+            actual_path = builder.save(output_path)
 
             self.log_message.emit('转换完成！')
-            self.task_finished.emit(True, output_path, '')
+            self.task_finished.emit(True, actual_path, '')
         except Exception as e:
             self.log_message.emit(f'错误: {str(e)}')
             self.task_finished.emit(False, '', str(e))

@@ -28,8 +28,24 @@ class WordBuilder:
         return self._doc
 
     def save(self, output_path):
-        self._doc.save(output_path)
-        self._log(f'已保存到: {output_path}')
+        try:
+            self._doc.save(output_path)
+            self._log(f'已保存到: {output_path}')
+        except PermissionError:
+            import tempfile
+            import os
+            fallback_dir = os.path.join(tempfile.gettempdir(), 'PDF2Word')
+            os.makedirs(fallback_dir, exist_ok=True)
+            fallback_path = os.path.join(fallback_dir, os.path.basename(output_path))
+            counter = 1
+            while os.path.exists(fallback_path):
+                name, ext = os.path.splitext(os.path.basename(output_path))
+                fallback_path = os.path.join(fallback_dir, f'{name}({counter}){ext}')
+                counter += 1
+            self._doc.save(fallback_path)
+            self._log(f'原路径无写入权限，已保存到: {fallback_path}')
+            return fallback_path
+        return output_path
 
     def _setup_document(self):
         style = self._doc.styles['Normal']
