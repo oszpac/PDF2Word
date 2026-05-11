@@ -1,0 +1,7 @@
+PySide6>=6.5.0
+PyMuPDF>=1.23.0
+paddlepaddle>=2.5.0
+paddleocr>=2.7.0
+python-docx>=0.8.11
+Pillow>=10.0.0
+opencv-python>=4.8.0
